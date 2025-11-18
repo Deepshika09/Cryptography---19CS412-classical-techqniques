@@ -1,5 +1,5 @@
 
-# PLyfair cipher
+# Playfair cipher
 playfair Cipher using with different key values
 
 # AIM:
