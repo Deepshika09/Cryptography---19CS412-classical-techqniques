@@ -181,4 +181,5 @@ int main() {
 ## OUTPUT:
 
 <img width="438" height="302" alt="Screenshot 2025-11-18 153514" src="https://github.com/user-attachments/assets/9b27509b-840a-4d39-b7b5-07a0cc71dd62" />
-
+## RESULT:
+therefore , the program was successfully executed
