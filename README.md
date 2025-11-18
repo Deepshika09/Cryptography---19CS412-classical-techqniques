@@ -1,185 +1,94 @@
+# HILL CIPHER
+HILL CIPHER
+EX. NO: 3 AIM:
+ 
 
-# Playfair cipher
-playfair Cipher using with different key values
+## IMPLEMENTATION OF HILL CIPHER
+ 
+## To write a C program to implement the hill cipher substitution techniques.
 
-# AIM:
+## DESCRIPTION:
 
-To develop a simple C program to implement Rail Fence Cipher.
+Each letter is represented by a number modulo 26. Often the simple scheme A = 0, B
+= 1... Z = 25, is used, but this is not an essential feature of the cipher. To encrypt a message, each block of n letters is  multiplied by an invertible n × n matrix, against modulus 26. To
+decrypt the message, each block is multiplied by the inverse of the m trix used for
+ 
+encryption. The matrix used
+ 
+for encryption is the cipher key, and it sho
+ 
+ld be chosen
+ 
+randomly from the set of invertible n × n matrices (modulo 26).
 
-## DESIGN STEPS:
 
-### Step 1:
+## ALGORITHM:
 
-Design of Rail Fence Cipher algorithnm 
+STEP-1: Read the plain text and key from the user. STEP-2: Split the plain text into groups of length three. STEP-3: Arrange the keyword in a 3*3 matrix.
+STEP-4: Multiply the two matrices to obtain the cipher text of length three.
+STEP-5: Combine all these groups to get the complete cipher text.
 
-### Step 2:
-
-Implementation using C or pyhton code
-
-### Step 3:
-
-Testing algorithm with different key values. 
-ALGORITHM DESCRIPTION:
-In the rail fence cipher, the plaintext is written downwards and diagonally on successive "rails" of an imaginary fence, then moving up when we reach the bottom rail. When we reach the top rail, the message is written downwards again until the whole plaintext is written out. The message is then read off in rows.
-
-## PROGRAM:
-
+## PROGRAM 
 ```
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#define SIZE 30
-void toLowerCase(char plain[], int ps) {
-    for (int i = 0; i < ps; i++) {
-        if (plain[i] >= 'A' && plain[i] <= 'Z')
-            plain[i] += 32;
-    }
+#include <stdlib.h>
+#define S 2
+int K[S][S] = {{3,3},{2,5}};
+int modInv(int a, int m)
+{
+ a %= m;
+ for (int x = 1; x < m; x++) if ((a * x) % m == 1) return x;
+ return -1;
 }
-int removeSpaces(char* plain, int ps) {
-    int i, count = 0;
-    for (i = 0; i < ps; i++)
-        if (plain[i] != ' ')
-            plain[count++] = plain[i];
-    plain[count] = '\0';
-    return count;
+int det(int M[S][S]) { return (M[0][0]*M[1][1] - M[0][1]*M[1][0]) % 26; }
+void invMat(int M[S][S], int I[S][S])
+{
+ int d = det(M); if (d < 0) d += 26;
+ int di = modInv(d, 26); if (di == -1) exit(0);
+ I[0][0] = M[1][1]*di % 26;
+ I[0][1] = -M[0][1]*di % 26;
+ I[1][0] = -M[1][0]*di % 26;
+ I[1][1] = M[0][0]*di % 26;
+ for (int i = 0; i < S; i++) for (int j = 0; j < S; j++)
+ if (I[i][j] < 0) I[i][j] += 26;
 }
-void generateKeyTable(char key[], int ks, char keyT[5][5]) {
-    int i, j, k;
-    int dicty[26] = {0};
-    for (i = 0; i < ks; i++) {
-        if (key[i] != 'j') {
-            dicty[key[i] - 'a'] = 2;
-        }
-    }
-    dicty['j' - 'a'] = 1;
-    i = 0;
-    j = 0;
-    for (k = 0; k < ks; k++) {
-        if (dicty[key[k] - 'a'] == 2) {
-            dicty[key[k] - 'a'] -= 1;
-            keyT[i][j] = key[k];
-            j++;
-            if (j == 5) {
-                i++;
-                j = 0;
-            }
-        }
-    }
-    for (k = 0; k < 26; k++) {
-        if (dicty[k] == 0) {
-            keyT[i][j] = (char)(k + 'a');
-            j++;
-            if (j == 5) {
-                i++;
-                j = 0;
-            }
-        }
-    }
+void mult(int M[S][S], int in[], int out[])
+{
+ for (int i = 0; i < S; i++)
+ {
+ out[i] = 0;
+ for (int j = 0; j < S; j++) out[i] += M[i][j]*in[j];
+ out[i] %= 26;
+ }
 }
-void search(char keyT[5][5], char a, char b, int arr[]) {
-    int i, j;
-    if (a == 'j')
-        a = 'i';
-    if (b == 'j')
-        b = 'i';
-    for (i = 0; i < 5; i++) {
-        for (j = 0; j < 5; j++) {
-            if (keyT[i][j] == a) {
-                arr[0] = i;
-                arr[1] = j;
-            }
-            else if (keyT[i][j] == b) {
-                arr[2] = i;
-                arr[3] = j;
-            }
-        }
-    }
-}
-int mod5(int a) {
-    return (a % 5);
-}
-int prepare(char str[], int ptrs) {
-    if (ptrs % 2 != 0) {
-        str[ptrs++] = 'z';
-        str[ptrs] = '\0';
-    }
-    return ptrs;
-}
-void encrypt(char str[], char keyT[5][5], int ps) {
-    int i, a[4];
-    for (i = 0; i < ps; i += 2) {
-        search(keyT, str[i], str[i + 1], a);
-        if (a[0] == a[2]) { 
-            str[i] = keyT[a[0]][mod5(a[1] + 1)];
-            str[i + 1] = keyT[a[2]][mod5(a[3] + 1)];
-        } else if (a[1] == a[3]) { 
-            str[i] = keyT[mod5(a[0] + 1)][a[1]];
-            str[i + 1] = keyT[mod5(a[2] + 1)][a[3]];
-        } else { 
-            str[i] = keyT[a[0]][a[3]];
-            str[i + 1] = keyT[a[2]][a[1]];
-        }
-    }
-}
-void decrypt(char str[], char keyT[5][5], int ps) {
-    int i, a[4];
-    for (i = 0; i < ps; i += 2) {
-        search(keyT, str[i], str[i + 1], a);
-        if (a[0] == a[2]) { 
-            str[i] = keyT[a[0]][mod5(a[1] - 1 + 5)];
-            str[i + 1] = keyT[a[2]][mod5(a[3] - 1 + 5)];
-        } else if (a[1] == a[3]) { 
-            str[i] = keyT[mod5(a[0] - 1 + 5)][a[1]];
-            str[i + 1] = keyT[mod5(a[2] - 1 + 5)][a[3]];
-        } else { 
-            str[i] = keyT[a[0]][a[3]];
-            str[i + 1] = keyT[a[2]][a[1]];
-        }
-    }
-}
-void encryptByPlayfairCipher(char str[], char key[]) {
-    int ps, ks;
-    char keyT[5][5];
-    ks = strlen(key);
-    ks = removeSpaces(key, ks);
-    toLowerCase(key, ks);
-    ps = strlen(str);
-    toLowerCase(str, ps);
-    ps = removeSpaces(str, ps);
-    ps = prepare(str, ps);
-    generateKeyTable(key, ks, keyT);
-    encrypt(str, keyT, ps);
-}
-void decryptByPlayfairCipher(char str[], char key[]) {
-    int ps, ks;
-    char keyT[5][5];
-    ks = strlen(key);
-    ks = removeSpaces(key, ks);
-    toLowerCase(key, ks);
-    ps = strlen(str);
-    toLowerCase(str, ps);
-    ps = removeSpaces(str, ps);
-    generateKeyTable(key, ks, keyT);
-    decrypt(str, keyT, ps);
+void hill(char *in, char *out, int enc)
+{
+ int len = strlen(in), V[S], R[S], KM[S][S];
+ if (!enc) invMat(K, KM); else memcpy(KM, K, sizeof(K));
+ for (int i = 0; i < len; i += S)
+ {
+ for (int j = 0; j < S; j++) V[j] = in[i + j] - 'A';
+ mult(KM, V, R);
+ for (int j = 0; j < S; j++) out[i + j] = R[j] + 'A';
+ }
+ out[len] = 0;
 }
 int main() {
-    char str[SIZE], key[SIZE];
-    printf("Simulating Playfair Cipher\n");
-    strcpy(key, "Monopoly");
-    printf("Key text: %s\n", key);
-    strcpy(str, "DEEPSHIKA");
-    printf("Plain text: %s\n", str);
-    encryptByPlayfairCipher(str, key);
-    printf("Cipher text: %s\n", str);
-    decryptByPlayfairCipher(str, key);
-    printf("Decrypted text: %s\n", str);
-    return 0;
+ char msg[] = "WETHA", enc[100], dec[100];
+ hill(msg, enc, 1); printf("Encrypted: %s\n", enc);
+ hill(enc, dec, 0); printf("Decrypted: %s\n", dec);
 }
-
 ```
 
-## OUTPUT:
+## OUTPUT
 
-<img width="438" height="302" alt="Screenshot 2025-11-18 153514" src="https://github.com/user-attachments/assets/9b27509b-840a-4d39-b7b5-07a0cc71dd62" />
+<img width="375" height="221" alt="Screenshot 2025-11-18 153956" src="https://github.com/user-attachments/assets/01541d48-5b46-401d-8df1-5aec847ae4dc" />
+
 ## RESULT:
-therefore , the program was successfully executed
+
+Thus,the program executed successfully.
+
+
+## RESULT
+Thus,the program executed successfully.
