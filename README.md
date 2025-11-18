@@ -88,5 +88,3 @@ int main() {
 Thus,the program executed successfully.
 
 
-## RESULT
-Thus,the program executed successfully.
